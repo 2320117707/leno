@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<!-- thymeleaf模板必须引入 -->
+<!DOCTYPE HTML>
+
+<!-- thymeleaf模板必须引入 -->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>登录</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" type="text/css" th:href="@{/libs/css/register.css}"
+          media="all"/>
+</head>
+<body>
+<div id="register">
+    <h1>注 册</h1>
+    <form method="post" th:action="@{/user/register}" autocomplete="off">
+        <input type="text" required="required" placeholder="请输入用户名" name="username"
+               oninvalid="setCustomValidity('请输入用户名称')" oninput="setCustomValidity('')" autocomplete="off" />
+        <input type="password" required="required" placeholder="请输入密码" name="password"
+               oninvalid="setCustomValidity('请输入您的密码')" oninput="setCustomValidity('')" autocomplete="new-password"/>
+        <div>
+            <button class="but" type="submit">完 成</button>
+            <span id="msg" th:text="${message}"></span>
+        </div>
+    </form>
+    <button class="but1" th:if="${status} eq 200" type="button" onclick="s()">前往登录</button>
+</div>
+
+<script th:inline="javascript">
+    var msg = [[${message}]];
+    console.log(msg);
+    //1000是多久被隐藏，单位毫秒
+    setTimeout(function () {
+        document.getElementById("msg").style.display = "none";
+    }, 3000);
+
+    function s() {
+        window.location.href = "/login.html";
+    }
+</script>
+
+</body>
+
+</html>
