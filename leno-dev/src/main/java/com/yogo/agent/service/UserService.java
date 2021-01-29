@@ -1,16 +1,12 @@
 package com.yogo.agent.service;
 
 import com.yogo.agent.common.back.ResultInfo;
-import com.yogo.agent.common.enums.ExceptionEnum;
 import com.yogo.agent.common.enums.ResultEnum;
-import com.yogo.agent.common.exceptions.YgException;
 import com.yogo.agent.entity.UserEntity;
 import com.yogo.agent.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.xml.transform.Result;
 
 /**
  * @Author owen

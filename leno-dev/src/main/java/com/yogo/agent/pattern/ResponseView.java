@@ -14,14 +14,14 @@ import java.util.Objects;
 @Component
 public class ResponseView {
 
-    public ModelAndView build(ResultInfo info, String url) {
+    public ModelAndView build(ResultInfo info, String url,String name) {
         ModelAndView mv = new ModelAndView(url);
         mv.addObject("message", info.getMessage());
         mv.addObject("status", info.getStatus());
         mv.addObject("timestamp", info.getStatus());
         Object data = info.getData();
         if (Objects.nonNull(data)) {
-            mv.addObject("data", data);
+            mv.addObject(name, data);
         }
         return mv;
     }

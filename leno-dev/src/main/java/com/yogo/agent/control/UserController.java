@@ -34,25 +34,7 @@ public class UserController {
             @RequestParam @NotBlank(message = "请输入用户名") String username,
             @RequestParam @NotBlank(message = "请输入密码") String password
     ) {
-        return responseView.build(userService.register(username, password), "/register");
-    }
-
-    @RequestMapping("/index")
-    public ModelAndView index() {
-        return new ModelAndView("/index");
-    }
-
-    /**
-     * 自定义登录页面
-     *
-     * @param error 错误信息显示标识
-     * @return page
-     */
-    @GetMapping("/login")
-    public ModelAndView login(String error) {
-        ModelAndView modelAndView = new ModelAndView("/login");
-        modelAndView.addObject("error", error);
-        return modelAndView;
+        return responseView.build(userService.register(username, password), "register", null);
     }
 
 

@@ -34,10 +34,14 @@ public enum ResultEnum {
      * 认证
      */
     FORBID(403, "权限不足无法访问！"),
-    OK(200, "The interface returns to normal"),
+    OK(200, "Success"),
     SERVER_ERROR(400, "服务异常！"),
     BECOME_PARTNER_FAIL(400, "提交申请失败,请确认信息是否有误!"),
-    BECOME_PARTNER_SUCCESS(200, "提交申请成功,请耐心等待审核");
+    BECOME_PARTNER_SUCCESS(200, "提交申请成功,请耐心等待审核"),
+    SAVE_OK(200, "添加成功"),
+    CHOOSE_OK(200, "应用成功"),
+    DEL_OK(200, "应用成功"),
+    ;
 
 
     private int status;

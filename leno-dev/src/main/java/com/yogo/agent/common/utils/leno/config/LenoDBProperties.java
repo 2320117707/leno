@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 public class LenoDBProperties {
     protected final static Logger LOGGER = LoggerFactory.getLogger(LenoDBProperties.class);
     protected static final String DRIVER = "com.mysql.jdbc.Driver";
-    protected static final String URL = "jdbc:mysql://39.105.153.98:3306/YoGo1.1?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+    protected static final String URL = "jdbc:mysql://39.105.153.98:3306/leno?useUnicode=true&characterEncoding=utf-8&useSSL=false";
     protected static final String USERNAME = "root";
     protected static final String PASSWORD = "YoGoYun.com";
 }

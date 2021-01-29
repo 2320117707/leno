@@ -43,7 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 //允许不登陆就可以访问的方法，多个用逗号分隔
                 .authorizeRequests()
-                .antMatchers("/user/register","/register.html")
+                .antMatchers("/conf/add","/conf/get","/user/register","/register.html")
                 .permitAll()
                 .anyRequest().authenticated();
         //session管理,失效后跳转

@@ -24,9 +24,10 @@ import java.util.Objects;
 @Component
 public class MyCustomUserService implements UserDetailsService {
 
-    @Autowired
+
     private final UserMapper userMapper;
 
+    @Autowired
     public MyCustomUserService(UserMapper userMapper) {
         this.userMapper = userMapper;
     }
@@ -39,7 +40,7 @@ public class MyCustomUserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity userEntity = userMapper.selByUserName(username);
-        if (Objects.isNull(userEntity)){
+        if (Objects.isNull(userEntity)) {
             throw new YgException(ExceptionEnum.USER_NOT_EXIST);
         }
         MyUserDetails details = BeanHelper.copyProperties(userEntity, MyUserDetails.class);

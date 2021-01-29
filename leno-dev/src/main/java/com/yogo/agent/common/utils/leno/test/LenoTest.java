@@ -14,8 +14,8 @@ public class LenoTest {
 //                .setTableName("agent_user")
 //                .clearLeno()
 //                .ok();
-        LenoControl.beanMaker(MallUser.class, "yg_user")
-                .setClassName("ConsoleUser")
+        LenoControl.beanMaker(MallUser.class, "conf")
+                .setClassName("ConfEntity")
                 .lombok()
                 .ok();
     }
