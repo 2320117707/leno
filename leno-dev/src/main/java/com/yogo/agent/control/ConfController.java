@@ -42,6 +42,15 @@ public class ConfController {
         return confService.addConf(conf, principal);
     }
 
+    @PostMapping("/edit")
+    @ResponseBody
+    public ResultInfo editConf(
+            @RequestBody @Valid ConfEntity conf, BindingResult bindingResult, Principal principal
+    ) {
+        VerificationProcess.revertMsg(bindingResult);
+        return confService.editConf(conf, principal);
+    }
+
     @GetMapping("/get")
     public String selConf(
             Principal principal, Model model

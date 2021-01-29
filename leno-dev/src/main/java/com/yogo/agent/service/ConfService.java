@@ -31,9 +31,14 @@ public class ConfService {
 
     public ResultInfo addConf(ConfEntity conf, Principal principal) {
         conf.setUser(principal.getName());
-        conf.setUrl(conf.getUrl());
         confMapper.insertSelective(conf);
         return ResultInfo.response(ResultEnum.SAVE_OK);
+    }
+
+    public ResultInfo editConf(ConfEntity conf, Principal principal) {
+        conf.setUser(principal.getName());
+        confMapper.updateByPrimaryKeySelective(conf);
+        return ResultInfo.response(ResultEnum.EDIT_OK);
     }
 
     public ResultInfo selConf(Principal principal) {
@@ -57,4 +62,6 @@ public class ConfService {
         confMapper.deleteByPrimaryKey(id);
         return ResultInfo.response(ResultEnum.DEL_OK);
     }
+
+
 }

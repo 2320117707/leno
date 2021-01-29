@@ -40,6 +40,7 @@ public enum ResultEnum {
     BECOME_PARTNER_SUCCESS(200, "提交申请成功,请耐心等待审核"),
     SAVE_OK(200, "添加成功"),
     CHOOSE_OK(200, "应用成功"),
+    EDIT_OK(200, "编辑成功"),
     DEL_OK(200, "应用成功"),
     ;
 
