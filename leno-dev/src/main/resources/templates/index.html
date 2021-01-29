@@ -143,7 +143,8 @@
 
             <!--            <h2><a class="btn btn-sm btn-success" th:href="@{/conf}">添加数据库配置</a></h2>-->
             <h2><a class="btn btn-sm btn-success" data-toggle="modal" data-target="#myModal">添加数据库配置</a></h2>
-            <h2><a id="myConf" class="btn btn-sm btn-success" data-toggle="modal" data-target="#myModal1">我的数据库配置</a></h2>
+            <h2><a id="myConf" class="btn btn-sm btn-success" data-toggle="modal" data-target="#myModal1">我的数据库配置</a>
+            </h2>
 
         </div>
         <!--三图iii-->
@@ -160,7 +161,9 @@
                                 Generate entity class functionality from database tables,need DB information.
                             </p>
                             <p>
-                                <a class="btn btn-primary" href="#">Action</a>
+<!--                                <a  class="btn btn-primary" th:href="@{/admin/news/{id}/toUpdate(id=${news.id})}">编辑</a>-->
+                                <a  class="btn btn-primary" th:href="@{/pojo}">Action</a>
+<!--                                <a class="btn btn-primary" onclick="toPojo()">Action</a>-->
                             </p>
                         </div>
                     </div>
@@ -351,12 +354,11 @@
                                            data-dismiss="modal"
                                            th:onclick="section([[${c.id}]],[[${c.lib}]],[[${c.url}]],[[${c.username}]],[[${c.password}]])"
                                         >编辑</a>
-                                        <a class="btn btn-danger btn-sm" onclick="del()">删除</a>
+
+                                        <a class="btn btn-danger btn-sm" th:onclick="del([[${c.id}]])">删除</a>
+
                                         <button style="font-size: 3px" class="btn btn-success btn-sm"
                                                 th:onclick="'javascript:chooseConf('+${c.id}+')'">应用
-                                        </button>
-                                        <button style="visibility:hidden;" id="delConf" class="btn btn-danger btn-sm"
-                                                th:onclick="'javascript:delConf('+${c.id}+')'">删
                                         </button>
                                     </td>
                                     <td th:if="${c.enable} eq 0">
@@ -375,9 +377,6 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">好的我知道啦
                         </button>
-                        <!--                        <button style="VISIBILITY: hidden" id="selConf" type="button" class="btn btn-primary"-->
-                        <!--                                onclick="refreshPage()">刷新页面隐藏按钮-->
-                        <!--                        </button>-->
                     </div>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal -->
@@ -388,9 +387,9 @@
 
 <script th:inline="javascript">
     //播放器
-    let audio = document.getElementById('audio1');
-    let btn1 = document.getElementById('btn');
     play_mp3 = function () {
+        let audio = document.getElementById('audio1');
+        let btn1 = document.getElementById('btn');
         if (audio !== null) {
             if (audio.paused) {
                 btn1.value = "暂停";
@@ -404,6 +403,7 @@
 
     //选择应用哪一个数据库配置
     function chooseConf(id) {
+        console.log("应用的配置ID是:" + id);
         $.ajax({
             type: "POST",
             dataType: "json",
@@ -428,12 +428,6 @@
         $("#password1").val(password)
     }
 
-
-    //触发删除按钮
-    function pressDel() {
-        $("#delConf").click();
-    }
-
     //删除数据库配置
     function delConf(id) {
         $.ajax({
@@ -445,9 +439,7 @@
                 "id": id
             },
             success: function (result) {
-                if (result.status === 200) {
-                    $('#dp').load("/conf/get");
-                }
+                refreshPage();
             },
         });
     }
@@ -459,7 +451,7 @@
         let database = document.getElementById("database").value;
         let split = database.split("\/");
         if (isEmpty(split[0])) {
-            myAlert("请输入有效的数据库连接地址", null, "提示");
+            myAlert("请输入有效的数据库连接地址 例如 : 39.105.153.98:3306/table", null, "提示");
             return false;
         }
         let dbName = split[1];
@@ -467,13 +459,12 @@
 
         let re1url = new RegExp(/(([0-9]{1,3}\.){3}[0-9]{1,3}|([0-9a-z_!~*'-]+\.)*([0-9a-z][0-9a-z-]{0,61})?[0-9a-z]\.[a-z]{2,6}|localhost)(:[0-9]{2,6})?(\/?)$/);
         if (re1url.test(uri) === false) {
-            myAlert("请输入有效的数据库连接地址", null, "提示");
-            // alert("请输入有效的数据库连接地址！");
+            myAlert("请输入有效的数据库连接地址 例如 : 39.105.153.98:3306/table", null, "提示");
             return false;
         }
-        let re1db = new RegExp(/^\w+$/);
-        if (re1db.test(dbName) === false || isEmpty(dbName)) {
-            myAlert("请输入有效的数据库表名", null, "提示");
+
+        if (isEmpty(dbName)) {
+            myAlert("请输入有效的数据库库名", null, "提示");
             return false;
         }
         if (isEmpty(username)) {
@@ -497,11 +488,10 @@
             }),
             success: function (result) {
                 if (result.status === 200) {
-                    myAlert(result.message + ",请到我的数据库配置中查看", null, "提示");
                     $('#myModal').modal('hide');
+                    clean();
                     $('#dp').load("/conf/get");
-                } else {
-                    alert("error: " + result.message)
+                    openMyConf()
                 }
             },
         });
@@ -525,13 +515,12 @@
 
         let re1url = new RegExp(/(([0-9]{1,3}\.){3}[0-9]{1,3}|([0-9a-z_!~*'-]+\.)*([0-9a-z][0-9a-z-]{0,61})?[0-9a-z]\.[a-z]{2,6}|localhost)(:[0-9]{2,6})?(\/?)$/);
         if (re1url.test(uri) === false) {
-            myAlert("请输入有效的数据库连接地址", null, "提示");
+            myAlert("请输入有效的数据库连接地址 例如 : 39.105.153.98:3306/table", null, "提示");
             // alert("请输入有效的数据库连接地址！");
             return false;
         }
-        let re1db = new RegExp(/^\w+$/);
-        if (re1db.test(dbName) === false || isEmpty(dbName)) {
-            myAlert("请输入有效的数据库表名", null, "提示");
+        if (isEmpty(dbName)) {
+            myAlert("请输入有效的数据库库名 例如 : 39.105.153.98:3306/table", null, "提示");
             return false;
         }
         if (isEmpty(username)) {
@@ -542,7 +531,6 @@
             myAlert("请输入数据库密码", null, "提示");
             return false;
         }
-
         $.ajax({
             type: "POST",
             dataType: "json",
@@ -557,10 +545,9 @@
             }),
             success: function (result) {
                 if (result.status === 200) {
-                    myAlert(result.message + ",请到我的数据库配置中查看", null, "提示");
-                    // alert(result.message);
                     $('#myModal2').modal('hide');
                     $('#dp').load("/conf/get");
+                    openMyConf();
                 } else {
                     alert("error: " + result.message)
                 }
@@ -574,15 +561,22 @@
     }
 
     //删除我的配置
-    function del() {
+    function del(id) {
         myConfirm("您确定删除此配置？", function () {
-            pressDel()
+            delConf(id)
         }, "确认");
-    };
+    }
 
     //判断obj是否为空
     function isEmpty(obj) {
         return typeof obj == "undefined" || obj == null || obj === "";
+    }
+
+    //清空添加配置页面
+    function clean() {
+        $("#form1 input").each(function () {
+            $(this).val('');
+        });
     }
 
     //局部刷新页面
@@ -592,9 +586,12 @@
 
     //页面加载时调用函数
     $(function () {
-        //发送请求到对应请求路径
-        $('#dp').load("/conf/get");
+        refreshPage();
     })
+
+    function toPojo() {
+        window.location.href = "/pojo.html";
+    }
 </script>
 </body>
 </html>
