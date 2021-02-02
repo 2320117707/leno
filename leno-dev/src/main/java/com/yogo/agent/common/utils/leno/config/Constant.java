@@ -123,7 +123,7 @@ public class Constant {
     public static final String UTF8 = "utf-8";
 
     //ClassMaker
-    public static final String REMARK = "/**\n" +
+    public static String REMARK = "/**\n" +
             " * @Author \n" +
             " * @Date " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n" +
             " * @Description\n" +

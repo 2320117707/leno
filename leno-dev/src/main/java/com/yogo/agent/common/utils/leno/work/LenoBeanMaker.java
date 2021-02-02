@@ -7,6 +7,7 @@ import com.yogo.agent.common.utils.leno.pojo.BeanInfo;
 import com.yogo.agent.common.utils.leno.pojo.Column;
 import com.yogo.agent.common.utils.leno.util.LenoDBOperation;
 import com.yogo.agent.common.utils.leno.util.LenoTownPortal;
+import com.yogo.agent.entity.ConfEntity;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -27,18 +28,21 @@ public class LenoBeanMaker {
      * @param className  类名
      * @param tableName  表名
      * @param isLombok   是否开启Lombok注解
+     * @param config 配置
      * @return 返回创建结果和类对象
      */
-    public static BeanInfo run(Class guideClass, String className, String tableName, Boolean isLombok) throws Exception {
-        String tableStructure = LenoDBOperation.getTableStructure(Constant.SQL_PREFIX + tableName);
+    public static BeanInfo run(Class guideClass, String className, String tableName, Boolean isLombok, ConfEntity config) throws Exception {
+        String tableStructure = LenoDBOperation.getTableStructure(Constant.SQL_PREFIX + tableName,config);
         String result = beanView(className, tableStructure, isLombok);
-        String beanPath = LenoTownPortal.start(guideClass, result);
-        BeanInfo beanInfo = new BeanInfo(beanPath, result, guideClass);
-        if (StringUtils.isEmpty(beanPath)) {
-            beanInfo.setCreated(false);
-        } else {
-            beanInfo.setCreated(true);
-        }
+        BeanInfo beanInfo = new BeanInfo();
+        beanInfo.setBeanContent(result);
+//        String beanPath = LenoTownPortal.start(guideClass, result);
+//        BeanInfo beanInfo = new BeanInfo(beanPath, result, guideClass);
+//        if (StringUtils.isEmpty(beanPath)) {
+//            beanInfo.setCreated(false);
+//        } else {
+//            beanInfo.setCreated(true);
+//        }
         return beanInfo;
     }
 

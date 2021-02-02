@@ -42,8 +42,8 @@ public class InitBeanMaker {
     }
 
     public void ok() throws Exception {
-        BeanInfo beanInfo = LenoBeanMaker.run(guideClass, className, tableName, isLombok);
-        if (frame){
+        BeanInfo beanInfo = LenoBeanMaker.run(guideClass, className, tableName, isLombok, null);
+        if (frame) {
             LenoClassMaker.genericFrame(beanInfo.getBeanPath(), beanInfo.getGuideClass());
         }
         if (beanInfo.isCreated()) {

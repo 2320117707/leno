@@ -42,6 +42,9 @@ public enum ResultEnum {
     CHOOSE_OK(200, "应用成功"),
     EDIT_OK(200, "编辑成功"),
     DEL_OK(200, "应用成功"),
+    CONN_OK(200, "连接成功"),
+    CONN_ERROR(200, "连接失败，请检查配置是否正确"),
+    CAN_NOT_DELETE(400, "此配置已被应用"),
     ;
 
 

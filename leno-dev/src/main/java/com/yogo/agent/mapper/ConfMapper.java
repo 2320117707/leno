@@ -24,4 +24,7 @@ public interface ConfMapper extends YgBaseMapper<ConfEntity> {
 
     @Update("update conf set enable = 1 where id = #{id}")
     void chooseUse(Long id);
+
+    @Select("select * from conf where user = #{name} and enable = 1")
+    ConfEntity selMyConf(String name);
 }

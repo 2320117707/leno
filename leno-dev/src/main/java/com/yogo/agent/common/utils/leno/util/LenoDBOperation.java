@@ -2,10 +2,13 @@ package com.yogo.agent.common.utils.leno.util;
 
 
 import com.yogo.agent.common.utils.leno.config.LenoDBProperties;
+import com.yogo.agent.entity.ConfEntity;
+import org.springframework.stereotype.Component;
 
 import java.sql.*;
 
 
+@Component
 public class LenoDBOperation extends LenoDBProperties {
 
     private static final String TABLE_STRUCTURE_INFO_NAME = "Create Table";
@@ -23,14 +26,8 @@ public class LenoDBOperation extends LenoDBProperties {
      *
      * @return
      */
-    private static Connection getConnection() {
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        } catch (SQLException e) {
-            LOGGER.error("get connection failure", e);
-        }
-        return conn;
+    public static Connection getConnection(String url, String username, String password) throws SQLException {
+        return DriverManager.getConnection(url, username, password);
     }
 
     /**
@@ -48,15 +45,17 @@ public class LenoDBOperation extends LenoDBProperties {
         }
     }
 
-
     /**
      * 获取表结构数据根据sql语句
      *
-     * @param sql sql语句 "show create table mall_sku"
+     * @param sql  sql语句 "show create table mall_sku"
+     * @param conf 数据库配置文件
      * @return String
      */
-    public static String getTableStructure(String sql) {
-        Connection conn = getConnection();
+    public static String getTableStructure(String sql, ConfEntity conf) throws SQLException {
+        String url = "jdbc:mysql://" + conf.getUrl() + "/" + conf.getLib() + "?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+
+        Connection conn = getConnection(url, conf.getUsername(), conf.getPassword());
         Statement statement = null;
         String result = "";
         try {
@@ -83,8 +82,9 @@ public class LenoDBOperation extends LenoDBProperties {
         return result;
     }
 
-    public static boolean createTable(String sql) {
-        Connection conn = getConnection();
+
+    public static boolean createTable(String sql) throws SQLException {
+        Connection conn = getConnection(URL, USERNAME, PASSWORD);
         Statement statement = null;
         try {
             statement = conn.createStatement();

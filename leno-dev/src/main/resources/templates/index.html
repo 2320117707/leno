@@ -7,6 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>极简开发</title>
     <link rel="icon" href="logo.ico" type="images/x-ico"/>
     <!-- Bootstrap -->
@@ -59,25 +60,22 @@
                             class="icon-bar"></span><span class="icon-bar"></span></button>
                     <a style="color: #f3a1a3" class="navbar-brand" href="#">Leno</a>
                 </div>
-
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
-                        <!--                        class="active"-->
-                        <li class="active">
-                            <a role="button"
-                               class="btn" style="color:#f3a1a3" href="#">开发</a>
+                        <li>
+                            <!--           Leno颜色                 style="color:#f3a1a3"-->
+                            <a role="button" class="btn" href="#">工具</a>
                         </li>
                         <li>
-                            <a style="color:#f3a1a3" id="modal-85792" href="#modal-container-85792" role="button"
-                               class="btn"
-                               data-toggle="modal">音乐</a>
+                            <a role="button" class="btn" href="#">开发</a>
                         </li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">探索中<strong
                                     class="caret"></strong></a>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a href="#">Action</a>
+                                    <a id="modal-85792" href="#modal-container-85792"
+                                       data-toggle="modal">音乐</a>
                                 </li>
                                 <li>
                                     <a href="#">Another action</a>
@@ -102,7 +100,7 @@
                         <div class="form-group">
                             <input type="text" class="form-control"/>
                         </div>
-                        <button type="button" class="btn btn-default">留言给作者</button>
+                        <button type="button" class="btn btn-default">留言</button>
                     </form>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
@@ -142,7 +140,7 @@
             </div>
 
             <!--            <h2><a class="btn btn-sm btn-success" th:href="@{/conf}">添加数据库配置</a></h2>-->
-            <h2><a class="btn btn-sm btn-success" data-toggle="modal" data-target="#myModal">添加数据库配置</a></h2>
+            <h2><a class="btn btn-sm btn-success" data-toggle="modal" data-target="#myModal">配置数据库信息</a></h2>
             <h2><a id="myConf" class="btn btn-sm btn-success" data-toggle="modal" data-target="#myModal1">我的数据库配置</a>
             </h2>
 
@@ -158,12 +156,11 @@
                                 PojoMaker
                             </h3>
                             <p>
-                                Generate entity class functionality from database tables,need DB information.
+                                <!--                                Generate entity class functionality from database tables,need DB information.-->
+                                从数据库表生成实体类功能，需要配置数据库信息。
                             </p>
                             <p>
-<!--                                <a  class="btn btn-primary" th:href="@{/admin/news/{id}/toUpdate(id=${news.id})}">编辑</a>-->
-                                <a  class="btn btn-primary" th:href="@{/pojo}">Action</a>
-<!--                                <a class="btn btn-primary" onclick="toPojo()">Action</a>-->
+                                <a class="btn btn-primary" th:href="@{/pojo}">Action</a>
                             </p>
                         </div>
                     </div>
@@ -176,7 +173,7 @@
                                 JsonMaker
                             </h3>
                             <p>
-                                Generate test data based on entity classes,suitable for back-end human test interfaces.
+                                基于实体类生成测试数据，适合java后端测试使用。
                             </p>
                             <p>
                                 <a class="btn btn-primary" href="#">Action</a>
@@ -192,7 +189,7 @@
                                 GirlMaker
                             </h3>
                             <p>
-                                Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta.
+                                需求待定
                             </p>
                             <p>
                                 <a class="btn btn-primary" href="#">Action</a>
@@ -357,14 +354,17 @@
 
                                         <a class="btn btn-danger btn-sm" th:onclick="del([[${c.id}]])">删除</a>
 
-                                        <button style="font-size: 3px" class="btn btn-success btn-sm"
+                                        <button class="btn btn-success btn-sm"
                                                 th:onclick="'javascript:chooseConf('+${c.id}+')'">应用
                                         </button>
+
+                                        <a class="btn btn-sm btn-primary"
+                                           th:onclick="testConn([[${c.id}]],[[${c.lib}]],[[${c.url}]],[[${c.username}]],[[${c.password}]])"
+                                        >测试连接</a>
                                     </td>
                                     <td th:if="${c.enable} eq 0">
                                     </td>
                                     <td th:if="${c.enable} eq 1">
-                                        <!--                                        <a class="btn btn-danger btn-sm">USE</a>-->
                                         <a href="#">
                                             <span class="glyphicon glyphicon-tree-conifer">USE</span>
                                         </a>
@@ -439,7 +439,12 @@
                 "id": id
             },
             success: function (result) {
-                refreshPage();
+                if (result.status === 200) {
+                    refreshPage();
+                } else {
+                    myConfirm(result.message, function () {
+                    }, "确认");
+                }
             },
         });
     }
@@ -555,6 +560,27 @@
         });
     }
 
+    //测试数据库连接
+    function testConn(id, lib, url, username, password) {
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: "/conf/test",
+            contentType: 'application/json;charset=utf-8',
+            data: JSON.stringify({
+                "id": id,
+                "username": username,
+                "password": password,
+                "url": url,
+                "lib": lib
+            }),
+            success: function (result) {
+                myConfirm(result.message, function () {
+                }, "确认");
+            },
+        })
+    }
+
     //打开我的配置
     function openMyConf() {
         document.getElementById("myConf").click()
@@ -592,6 +618,18 @@
     function toPojo() {
         window.location.href = "/pojo.html";
     }
+
+    //禁用浏览器回退按钮
+    $(function () {
+        if (window.history && window.history.pushState) {
+            $(window).on('popstate', function () {
+                window.history.pushState('forward', null, '');
+                window.history.forward(1);
+            });
+        }
+        window.history.pushState('forward', null, '');
+        window.history.forward(1);
+    })
 </script>
 </body>
 </html>

@@ -2,6 +2,7 @@ package com.yogo.agent.control;
 
 import com.yogo.agent.entity.ConfEntity;
 import com.yogo.agent.mapper.ConfMapper;
+import com.yogo.agent.service.ConfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Principal;
+import java.util.List;
 
 /**
  * @author owen
@@ -18,9 +20,12 @@ public class PageController {
 
     private final ConfMapper confMapper;
 
+    private final ConfService confService;
+
     @Autowired
-    public PageController(ConfMapper confMapper) {
+    public PageController(ConfMapper confMapper, ConfService confService) {
         this.confMapper = confMapper;
+        this.confService = confService;
     }
 
     @RequestMapping("/index")
@@ -55,6 +60,8 @@ public class PageController {
         ConfEntity config = confMapper.selectOne(conf);
         ModelAndView modelAndView = new ModelAndView("pojo");
         modelAndView.addObject("conf", config);
+        List<String> tables = confService.getTable(config);
+        modelAndView.addObject("tbs", tables);
         return modelAndView;
     }
 

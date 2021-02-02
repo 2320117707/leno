@@ -3,7 +3,6 @@ package com.yogo.agent.control;
 import com.yogo.agent.common.back.ResultInfo;
 import com.yogo.agent.common.exceptions.VerificationProcess;
 import com.yogo.agent.entity.ConfEntity;
-import com.yogo.agent.pattern.ResponseView;
 import com.yogo.agent.service.ConfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,12 +24,11 @@ public class ConfController {
 
     private final ConfService confService;
 
-    private final ResponseView responseView;
 
     @Autowired
-    public ConfController(ConfService confService, ResponseView responseView) {
+    public ConfController(ConfService confService) {
         this.confService = confService;
-        this.responseView = responseView;
+
     }
 
     @PostMapping("/add")
@@ -49,6 +47,23 @@ public class ConfController {
     ) {
         VerificationProcess.revertMsg(bindingResult);
         return confService.editConf(conf, principal);
+    }
+
+    /**
+     * 测试连接
+     *
+     * @param conf 数据库配置
+     * @param bindingResult 校验
+     * @param principal 证书
+     * @return
+     */
+    @PostMapping("/test")
+    @ResponseBody
+    public ResultInfo testConnect(
+            @RequestBody @Valid ConfEntity conf, BindingResult bindingResult, Principal principal
+    ) {
+        VerificationProcess.revertMsg(bindingResult);
+        return confService.testConf(conf);
     }
 
     @GetMapping("/get")
@@ -77,13 +92,4 @@ public class ConfController {
     ) {
         return confService.delConf(id);
     }
-
-
-//    @PostMapping("/upd")
-//    public ResultInfo updConf(
-//            @RequestBody @Valid ConfEntity conf, BindingResult bindingResult, Principal principal
-//    ) {
-//        VerificationProcess.revertMsg(bindingResult);
-//        return confService.addConf(conf,principal);
-//    }
 }

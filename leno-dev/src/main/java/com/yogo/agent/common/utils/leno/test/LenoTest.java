@@ -19,6 +19,4 @@ public class LenoTest {
                 .lombok()
                 .ok();
     }
-
-
 }
