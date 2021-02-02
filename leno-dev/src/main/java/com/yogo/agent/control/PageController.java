@@ -13,7 +13,7 @@ import java.security.Principal;
 import java.util.List;
 
 /**
- * @author owen
+ * @author owen 页面控制器
  */
 @RestController
 public class PageController {
@@ -48,8 +48,6 @@ public class PageController {
 
     /**
      * 跳转到pojo页面
-     *
-     * @return
      */
     @GetMapping("/pojo")
     public ModelAndView toPojo(Principal principal) {
@@ -63,6 +61,14 @@ public class PageController {
         List<String> tables = confService.getTable(config);
         modelAndView.addObject("tbs", tables);
         return modelAndView;
+    }
+
+    /**
+     * 跳转到json页面
+     */
+    @GetMapping("/json")
+    public ModelAndView toJson(Principal principal) {
+        return new ModelAndView("json");
     }
 
     @GetMapping("/register")

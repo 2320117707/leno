@@ -18,5 +18,6 @@ public class LenoTest {
                 .setClassName("ConfEntity")
                 .lombok()
                 .ok();
+        LenoControl.jsonView(ConfEntity.class);
     }
 }

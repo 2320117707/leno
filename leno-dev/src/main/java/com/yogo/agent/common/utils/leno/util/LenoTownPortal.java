@@ -60,6 +60,7 @@ public class LenoTownPortal {
      * @throws Exception
      */
     private static boolean create(String validFile, String txt) throws Exception {
+        System.out.println("创建类的路径是: "+validFile);
         boolean result = false;
         File file = new File(validFile);
         if (!file.exists()) {

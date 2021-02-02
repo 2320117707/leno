@@ -176,7 +176,7 @@
                                 基于实体类生成测试数据，适合java后端测试使用。
                             </p>
                             <p>
-                                <a class="btn btn-primary" href="#">Action</a>
+                                <a class="btn btn-primary" th:href="@{/json}">Action</a>
                             </p>
                         </div>
                     </div>
@@ -615,9 +615,6 @@
         refreshPage();
     })
 
-    function toPojo() {
-        window.location.href = "/pojo.html";
-    }
 
     //禁用浏览器回退按钮
     $(function () {

@@ -6,7 +6,7 @@ import com.yogo.agent.common.utils.leno.work.LenoBeanMaker;
 import com.yogo.agent.dto.ModelDTO;
 import com.yogo.agent.entity.ConfEntity;
 import com.yogo.agent.mapper.ConfMapper;
-import com.yogo.odp.WangXiaoSong232;
+import com.yogo.agent.odp.WangXiaoSong232;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

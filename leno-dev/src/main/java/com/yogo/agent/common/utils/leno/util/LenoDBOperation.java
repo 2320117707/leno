@@ -3,11 +3,13 @@ package com.yogo.agent.common.utils.leno.util;
 
 import com.yogo.agent.common.utils.leno.config.LenoDBProperties;
 import com.yogo.agent.entity.ConfEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
 
 
+@Slf4j
 @Component
 public class LenoDBOperation extends LenoDBProperties {
 
@@ -53,8 +55,9 @@ public class LenoDBOperation extends LenoDBProperties {
      * @return String
      */
     public static String getTableStructure(String sql, ConfEntity conf) throws SQLException {
-        String url = "jdbc:mysql://" + conf.getUrl() + "/" + conf.getLib() + "?useUnicode=true&characterEncoding=utf-8&useSSL=false";
-
+        String uri = conf.getUrl().trim();
+        String url = "jdbc:mysql://" +  uri+ "/" + conf.getLib() + "?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+        log.info("connection: " + url);
         Connection conn = getConnection(url, conf.getUsername(), conf.getPassword());
         Statement statement = null;
         String result = "";

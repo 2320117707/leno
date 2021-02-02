@@ -3,7 +3,6 @@ package com.yogo.agent.common.utils.leno.work;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.yogo.agent.common.utils.leno.config.Constant;
 import com.yogo.agent.common.utils.leno.enums.ParaType;
 
@@ -12,10 +11,10 @@ import java.util.Iterator;
 
 
 /**
- * @Author owen & dong
+ * @Author leno
  * @Date 2020/11/3
  * @Description 根据JavaObject的Class对象获取它的JSON模型.
- * 使用方法(填入Class后main方法启动) String model = new LenoJsonView().getJSONParameter(TestObject.class);
+ * 使用方法(填入Class后main方法启动) String model = LenoJsonView.classToJsonModel(TestObject.class);
  **/
 public class LenoJsonView {
     /**
@@ -25,6 +24,7 @@ public class LenoJsonView {
      * @return String 字符串
      */
     public static String classToJsonModel(Class c) throws Exception {
+
         StringBuilder sb = new StringBuilder(Constant.BRACE_OPEN);
         for (Field field : c.getDeclaredFields()) {
 //          获取第一层的字段名称
@@ -54,7 +54,7 @@ public class LenoJsonView {
                     Class<?> subFieldType = subField.getType();
                     String subFieldTypeName = subField.getGenericType().getTypeName();
                     if (Iterator.class.isAssignableFrom(subFieldType)) {
-//                      todo 当前仅支持两层嵌套对象 待开发第三层/递归
+//                      当前仅支持两层嵌套对象
                         subSb.append(Constant.SINGLE_QUOTES).append(subFieldName).append(Constant.END_IN_BRACKET);
                     } else {
                         genericProcess(subFieldName, subFieldTypeName, subSb);
@@ -97,11 +97,7 @@ public class LenoJsonView {
      * @return 美化后的字符串
      */
     private static String prettify(String model) {
-        JSONObject object = JSONObject.parseObject(model);
-        return JSON.toJSONString(object, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
+        return JSON.toJSONString(JSONObject.parseObject(model), true);
     }
-
-
-
 }
 

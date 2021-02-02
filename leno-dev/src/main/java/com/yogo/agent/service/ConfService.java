@@ -55,7 +55,9 @@ public class ConfService extends LenoDBOperation {
     public ResultInfo testConf(ConfEntity conf) {
         try {
             synchronized (conf.getId()) {
-                String url = "jdbc:mysql://" + conf.getUrl() + "/" + conf.getLib() + "?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+                String uri = conf.getUrl().trim();
+                String url = "jdbc:mysql://" +  uri+ "/" + conf.getLib() + "?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+                log.info("connection: " + url);
                 getConnection(url, conf.getUsername(), conf.getPassword());
             }
             return ResultInfo.response(ResultEnum.CONN_OK);
@@ -99,7 +101,9 @@ public class ConfService extends LenoDBOperation {
         }
         ArrayList<String> list = new ArrayList<>();
         synchronized (conf.getId()) {
-            String url = "jdbc:mysql://" + conf.getUrl() + "/" + conf.getLib() + "?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+            String uri = conf.getUrl().trim();
+            String url = "jdbc:mysql://" +  uri+ "/" + conf.getLib() + "?useUnicode=true&characterEncoding=utf-8&useSSL=false";
+            log.info("connection: " + url);
             try (Connection conn = getConnection(url, conf.getUsername(), conf.getPassword())) {
                 ResultSet rs = conn.getMetaData().getTables(conn.getCatalog(), conf.getLib(), "%", new String[]{"TABLE"});
                 while (rs.next()) {
@@ -108,9 +112,10 @@ public class ConfService extends LenoDBOperation {
                 }
                 return list;
             } catch (Exception e) {
-                log.error("getTableMethodException :" + e.getMessage());
+                log.error(e.getMessage());
                 return new ArrayList<>();
             }
         }
     }
+
 }
