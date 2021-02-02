@@ -43,9 +43,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 //允许不登陆就可以访问的方法，多个用逗号分隔
                 .authorizeRequests()
-                .antMatchers("/conf/add","/conf/get","/user/register","/register.html")
+                .antMatchers("/conf/add", "/conf/get", "/user/register", "/register.html")
                 .permitAll()
                 .anyRequest().authenticated();
+        http.rememberMe().tokenValiditySeconds(60 * 60);
         //session管理,失效后跳转
         http.sessionManagement().invalidSessionUrl("/login");
         //单用户登录，如果有一个登录了，同一个用户在其他地方登录将前一个剔除下线
@@ -86,7 +87,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers( "/libs/**");
+        web.ignoring().antMatchers("/libs/**");
     }
 
 }

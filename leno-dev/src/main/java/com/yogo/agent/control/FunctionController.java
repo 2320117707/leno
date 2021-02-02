@@ -15,15 +15,18 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.tools.JavaCompiler;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
+import javax.tools.*;
 import javax.validation.Valid;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.apache.commons.lang3.StringUtils.split;
 
@@ -37,7 +40,6 @@ import static org.apache.commons.lang3.StringUtils.split;
 public class FunctionController {
 
     private final FunctionService functionService;
-
     private static Map<String, BeanInfo> map = new HashMap<>();
     private static Map<String, String> jsonMap = new HashMap<>();
 
@@ -74,61 +76,137 @@ public class FunctionController {
     public ResultInfo makeJson(
             Principal principal, String classTxt
     ) throws Exception {
-        System.out.println("得到的参数值是：" + classTxt);
         String ftp = (LenoTownPortal.start(Test.class, classTxt)) + ".java";
         if (ftp.equals(".java")) {
             ftp = jsonMap.get(principal.getName());
         }
-        jsonMap.put(principal.getName(), ftp);
-        return ResultInfo.response(ResultEnum.OK, ftp);
+        String[] split = ftp.split("\\.");
+        String name = split[split.length - 2];
+        String classPath = "D:\\project\\leno\\leno\\leno-dev\\target\\classes\\com\\yogo\\agent\\proxy\\";
+        complie(classTxt, name, classPath);
+        Class aClass = loadClass(new File(classPath));
+        if (Objects.isNull(aClass)) {
+            return ResultInfo.response(ResultEnum.SERVER_ERROR, null);
+        }
+        String result = LenoJsonView.classToJsonModel(aClass);
+        jsonMap.put(principal.getName(), result);
+        System.out.println("结果:" + result);
+        return ResultInfo.response(ResultEnum.OK, result);
     }
 
     @GetMapping("/get/json")
     public String getJson(
             Principal principal, Model model
     ) {
-        String ftp = jsonMap.get(principal.getName());
-        String s1 = null;
-        try {
-            System.out.println("截取前是：" + ftp);
-            String[] split = ftp.split("\\.");
-            String s = split[split.length - 2];
-            System.out.println("截取的name值是:" + s);
-            String un = "D:/WorkSpace/Project/leno/leno-dev/src/main/java/com/yogo/agent/proxy/" + s + ".java";
-            System.out.println("un : " + un);
+        String txt = jsonMap.get(principal.getName());
+        jsonMap.remove(principal.getName());
+        model.addAttribute("jsonTxt", txt);
 
-            // compile下面开始编译这个Store.java
-            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-            int result = compiler.run(null, null, null, un);
-            System.out.println(result==0?"成功":"失败");
-            URL[] urls = new URL[]{new URL("file:/"+ System.getProperty("user.dir") + "/leno-dev/src/main/java/com/yogo/agent/proxy/")};
-            URLClassLoader loader = new URLClassLoader(urls);
-            Class<?> aClass = loader.loadClass(s);
-            System.out.println("class:"+aClass);
-//            StandardJavaFileManager fileMgr = compiler.getStandardFileManager(null, null, null);
-//
-//            Iterable units = fileMgr.getJavaFileObjects(un);
-//
-//            JavaCompiler.CompilationTask t = compiler.getTask(null, fileMgr, null, null, null,
-//                    units);
-//
-//            t.call();
-//
-//            fileMgr.close();
-//            // load into memory and create an instance
-//            URL[] urls = new URL[]{new URL("file:/"
-//                    + System.getProperty("user.dir") + "/leno-dev/src")};
-//            URLClassLoader ul = new URLClassLoader(urls);
-//            Class c = ul.loadClass("com.yogo.agent.proxy." + s);
-//            System.out.println(c);
-//
-//            s1 = LenoJsonView.classToJsonModel(c);
-//            System.out.println(s1);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        model.addAttribute("jsonTxt", s1);
         return "json :: jsonTxt";
     }
 
+
+    /**
+     * @throws
+     * @Title: complie
+     * @Description: 动态编译java类成成class文件放入指定目录
+     * @param: @param expr
+     * @param: @param classPath
+     * @param: @return
+     * @param: @throws Exception
+     */
+    public static boolean complie(String source, String className, String classPath) {
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
+        StringSourceJavaObject sourceObject = null;
+        try {
+            Iterable<String> options = Arrays.asList("-d", classPath);
+            sourceObject = new FunctionController.StringSourceJavaObject(className, source);
+            Iterable<? extends JavaFileObject> fileObjects = Collections.singletonList(sourceObject);
+            JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, null, options, null, fileObjects);
+            boolean result = task.call();
+            return result;
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private static class StringSourceJavaObject extends SimpleJavaFileObject {
+
+        private String content = null;
+
+        public StringSourceJavaObject(String name, String content) throws URISyntaxException {
+            super(URI.create("string:///" + name.replace('.', '/') + Kind.SOURCE.extension), Kind.SOURCE);
+            this.content = content;
+        }
+
+        public CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException {
+            return content;
+        }
+    }
+
+    /**
+     * @throws
+     * @Title: loadClass
+     * @Description: 动态加载class文件
+     * @param: @param clazzPath
+     * @param: @throws Exception
+     * @return: void
+     */
+    public static Class loadClass(File clazzPath) throws Exception {
+        // 设置class文件所在根路径
+        // 例如/usr/java/classes下有一个test.App类，则/usr/java/classes即这个类的根路径，而.class文件的实际位置是/usr/java/classes/test/App.class
+//		File clazzPath = new File(class文件所在根路径);
+
+        // 记录加载.class文件的数量
+        int clazzCount = 0;
+        //only handle the folder
+        if (clazzPath.isFile()) {
+            clazzPath = clazzPath.getParentFile();
+        }
+
+        if (clazzPath.exists() && clazzPath.isDirectory()) {
+            // 获取路径长度
+            int clazzPathLen = clazzPath.getAbsolutePath().length() + 1;
+
+            Stack<File> stack = new Stack<>();
+            stack.push(clazzPath);
+
+            // 遍历类路径
+            while (stack.isEmpty() == false) {
+                File path = stack.pop();
+                File[] classFiles = path.listFiles(pathname -> pathname.isDirectory() || pathname.getName().endsWith(".class"));
+                for (File subFile : classFiles) {
+                    if (subFile.isDirectory()) {
+                        stack.push(subFile);
+                    } else {
+                        if (clazzCount++ == 0) {
+                            Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+                            boolean accessible = method.isAccessible();
+                            try {
+                                if (!accessible) {
+                                    method.setAccessible(true);
+                                }
+                                // 设置类加载器
+                                URLClassLoader classLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+                                // 将当前类路径加入到类加载器中
+                                method.invoke(classLoader, clazzPath.toURI().toURL());
+                            } finally {
+                                method.setAccessible(accessible);
+                            }
+                        }
+                        // 文件名称
+                        String className = subFile.getAbsolutePath();
+                        className = className.substring(clazzPathLen, className.length() - 6);
+                        className = className.replace(File.separatorChar, '.');
+                        // 加载Class类
+                        System.out.println(String.format("读取应用程序类文件[class=%s]", className));
+                        return Class.forName(className);
+                    }
+                }
+            }
+        }
+        return null;
+    }
 }
